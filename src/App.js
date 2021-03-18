@@ -26,7 +26,7 @@ function App() {
         alert(error)
       }
     )
-  })
+  }, [])
 
   function save(e) {
     e.preventDefault();
@@ -60,6 +60,35 @@ function App() {
       }
     )
   }
+  function remove(id) {
+    let status = 0;
+    fetch(URL + 'delete.php', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        id: id
+      })
+    })
+    .then(res => {
+      status = parseInt(res.status);
+      return res.json();
+    })
+    .then(
+      (res) => {
+        if (status === 200) {
+          const newListWithoutRemoved = coll.filter((item) => item.id !==id)
+          setColl(newListWithoutRemoved)
+        } else {
+          alert(res.error)
+        }
+      }, (error) => {
+        alert(error)
+      }
+    )
+  }
   return (
     <div className="main">
       <h3>Shopping list</h3>
@@ -78,7 +107,9 @@ function App() {
       </div>
       <ol>
         {coll.map(task =>(
-          <li key={task.id}>{task.description}{task.amount}</li>
+          <li key={task.id}>{task.description}{task.amount}
+          <a className="delete" onClick={() => remove(task.id)} href="#">Delete</a>
+          </li>
         ))}
       </ol>
     </div>
